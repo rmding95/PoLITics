@@ -9,10 +9,8 @@ app.config.from_object(__name__)
 
 ##### CONNECT TO DATABASE #####
 
-DATABASE = '/var/www/html/flaskapp/tweets.db'
-
 def connect_to_database():
-    return sqlite3.connect(app.config['DATABASE'])
+    return sqlite3.connect('tweets.db')
 
 def get_db():
     db = getattr(g, 'db', None)
@@ -27,7 +25,7 @@ def close_connection(exception):
         db.close()
 
 def execute_query(query, args=()):
-    cur = get_db().execute(query, args)
+    cur = get_db().execute(query)
     rows = cur.fetchall()
     cur.close()
     return rows
