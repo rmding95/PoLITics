@@ -1,7 +1,5 @@
 from flask import Flask
 import os
-os.environ['AWS_ACCESS_KEY_ID'] = 'AKIAIXQBGVZZ5R56OM2A'
-os.environ['AWS_SECRET_ACCESS_KEY'] = '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'
 
 from boto.dynamodb2.table import Table
 
