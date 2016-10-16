@@ -27,11 +27,50 @@ def getTweets(query, party):
             tweets.append(tweet)
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
             print(result.user.location)
-            if mydict.get(result.user.location.upper(), "Not Found") != "Not Found":
-                response = urllib.request.urlopen("http://api.zippopotam.us/us/" + mydict[result.user.location.upper()]).read().decode('utf-8')
-                data = json.loads(response)
-                tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
-                tweets.append(tweet)
+            for state in mydict2:
+                if (state[0]+",").lower() in result.user.location.lower() or (state[0]+" ").lower() in result.user.location.lower() or state[3].lower in result.user.location.lower():
+                    stateid = state [0]
+                    locationsent= 0
+                    for city in mydict2[stateid]:
+                        if city[0].lower() in result.user.location.lower():
+                            response = urllib.request.urlopen("http://api.zippopotam.us/us/" + city[1]).read().decode('utf-8')
+                            data = json.loads(response)
+                            if data.get('places')[0].get('latitude') == None or data.get('places')[0].get('longitude') == None:
+                                break
+                            tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party,result.created_at)
+                            tweets.append(tweet)
+                            locationsent = 1
+                            break
+                    if locationsent == 0:
+                        for state in mydict:
+                            if state[0] == stateid:
+                                response = urllib.request.urlopen("http://api.zippopotam.us/us/" + state[1]).read().decode('utf-8')data = json.loads(response)
+                                if data.get('places')[0].get('latitude') == None or data.get('places')[0].get('longitude') == None:
+                                    break
+                                tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
+                                tweets.append(tweet)
+                                locationsent = 1
+                                break
+                if locationsent == 0:
+                    for state in mydict2:
+                        if city[0].lower() in result.user.location.lower():
+                            response = urllib.request.urlopen("http://api.zippopotam.us/us/" + city[1]).read().decode('utf-8')
+                            data = json.loads(response)
+                            if data.get('places')[0].get('latitude') == None or data.get('places')[0].get('longitude') == None:
+                                break
+                            tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
+                            tweets.append(tweet)
+                            locationsent = 1
+                            break
+
+                if locationsent == 0:
+                    if result.user.location.lower() == "usa" or result.user.location.lower() == "us" or result.user.location.lower() == "united states" or result.user.location.lower() == "united states of america" :
+                        tweet = Tweet(34.024212, -118.496475, party, result.created_at)
+                        tweets.append(tweet)
+                        locationsent = 1
+
+                if locationsent == 1:
+                    break
 
 
 api = twitter.Api(consumer_key='rnBTENQ1GCJdZLVEuZheV6YJ6',
@@ -45,9 +84,20 @@ democrat_file = open('democrat_hashtags.txt', 'r')
 republican_query = createQuery(republican_file)
 democrat_query = createQuery(democrat_file)
 
+with open('StateZip.csv', mode='r') as infile:
+    reader = csv.reader(infile)
+    mydict2 = [[rows[0], rows[1], rows[2]] for rows in reader]
+
+
 with open('Zipcodes.csv', mode='r') as infile:
     reader = csv.reader(infile)
-    mydict = {rows[3] + ", " + rows[4]: rows[1] for rows in reader}
+    mydict2 = {}
+    for state in mydict:
+        currentlist = []
+        for row in reader:
+            if row[4] == state[0]:
+                currentlist.append([row[3],row[1]])
+        mydict2[state[0]] = currentlist
 
 tweets = []
 getTweets(republican_query, 'Republican')
