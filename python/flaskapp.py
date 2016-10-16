@@ -38,10 +38,18 @@ def execute_query(query, args=()):
 
 ##### ENDPOINTS #####
 
+GUIDE = ['x', 'y', 'party', 'tweet_time']
+
 @app.route("/viewdb")
 def viewdb():
     rows = execute_query("""SELECT * FROM natlpark""")
-    return rows
+    data = []
+    for row in enumerate(rows):
+        temp = {}
+        for entry in row:
+            temp{'a'} = entry
+        data.append(temp)
+    return data
 
 @app.route('/data')
 def get_data():

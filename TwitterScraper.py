@@ -1,5 +1,4 @@
 import twitter
-import geocoder
 from Tweet import Tweet
 import sqlite3
 
