@@ -48,6 +48,6 @@ conn = sqlite3.connect('tweets.db')
 c = conn.cursor()
 
 for tweet in tweets:
-    c.execute('INSERT INTO tweets VALUES (?, ?, ?, ?)', (tweet.latitude, tweet.longitude, tweet.party, tweet.timestamp))
+    c.execute('INSERT INTO tweets (lat, long, party, tweet_time) VALUES (?, ?, ?, ?)', (tweet.latitude, tweet.longitude, tweet.party, tweet.timestamp))
 
 print(tweets)
