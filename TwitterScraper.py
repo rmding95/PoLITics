@@ -1,6 +1,9 @@
 import twitter
 from Tweet import Tweet
 import sqlite3
+import csv
+import json
+import requests
 
 
 def createQuery(file):
@@ -24,8 +27,17 @@ def getTweets(query, party):
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
             # coords = geocoder.google(result.user.location)
             # if coords:
-            tweet = Tweet(1, 1, party, result.created_at)
-            tweets.append(tweet)
+            if mydict.get(result.user.location.upper(), "Not Found") != "Not Found":
+                r = requests.get(url="http://api.zippopotam.us/us/" + mydict[result.user.location.upper()])
+                data = json.load(r)
+                tweet = Tweet(data["latitude"], data["longitude"], 'party', result.created_at)
+                tweets.append(tweet)
+
+
+def createDictionary:
+    with open('Zipcodes.csv', mode='r') as infile:
+        reader = csv.reader(infile)
+        mydict = {rows[3] + ", " + rows[4]:rows[1] for rows in reader}
 
 
 api = twitter.Api(consumer_key='rnBTENQ1GCJdZLVEuZheV6YJ6',
