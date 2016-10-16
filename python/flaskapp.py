@@ -1,56 +1,26 @@
-from flask import Flask, request, g, url_for
-from flask.ext.api import FlaskAPI, status, exceptions
-import boto3
+from flask import Flask
+import os
+os.environ['AWS_ACCESS_KEY_ID'] = 'AKIAIXQBGVZZ5R56OM2A'
+os.environ['AWS_SECRET_ACCESS_KEY'] = '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'
 
-app = FlaskAPI(__name__)
-app.config.from_object(__name__)
+from boto.dynamodb2.table import Table
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('Tweets')
+app = Flask(__name__)
+# app.config['DYNAMO_TABLES'] = [
+#     Table('Tweets', schema=[HashKey('ID')])
+# ]
 
-@app.route("/viewdb")
-def viewdb():
-    response = table.scan()
-    data = response['Items']
-    return data
-    
-##### CONNECT TO DATABASE #####
+@app.route('/', methods=['GET'])
+def hello_world():
+    return 'Hello, World!'
 
-def connect_to_database():
-    return sqlite3.connect('tweets.db')
+@app.route('/test', methods=['GET'])
+def test():
+    return "test"
 
-def get_db():
-    db = getattr(g, 'db', None)
-    if db is None:
-        db = g.db = connect_to_database()
-    return db
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, 'db', None)
-    if db is not None:
-        db.close()
-
-def execute_query(query, args=()):
-    cur = get_db().execute(query)
-    rows = cur.fetchall()
-    cur.close()
-    return rows
->>>>>>> origin/master
-
-
-
-##### ENDPOINTS #####
-
-GUIDE = ['x', 'y', 'party', 'tweet_time']
-
-
-
-@app.route('/data')
-def get_data():
-    return {"x": "123", "y": "456", "party": "republican"}
-
+@app.route('/data', methods=['GET'])
+def data():
+	return "data"
 
 if __name__ == '__main__':
-    # db.create_all()
     app.run()
