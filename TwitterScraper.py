@@ -49,4 +49,6 @@ c = conn.cursor()
 for tweet in tweets:
     c.execute('INSERT INTO tweets (lat, long, party, tweet_time) VALUES (?, ?, ?, ?)', (tweet.latitude, tweet.longitude, tweet.party, tweet.timestamp))
 
-print(tweets)
+rows = c.execute('SELECT * FROM tweets')
+for row in rows:
+    print(row)

@@ -1,17 +1,15 @@
 from flask import Flask, request, g, url_for
 from flask.ext.api import FlaskAPI, status, exceptions
 
-import csv
 import sqlite3
-    
-DATABASE = '/var/www/html/flaskapp/natlpark.db'
 
 app = FlaskAPI(__name__)
 app.config.from_object(__name__)
 
 
-
 ##### CONNECT TO DATABASE #####
+
+DATABASE = '/var/www/html/flaskapp/tweets.db'
 
 def connect_to_database():
     return sqlite3.connect(app.config['DATABASE'])
@@ -40,16 +38,10 @@ def execute_query(query, args=()):
 
 GUIDE = ['x', 'y', 'party', 'tweet_time']
 
-@app.route("/viewdb")
+@app.route('/viewdb')
 def viewdb():
-    rows = execute_query("""SELECT * FROM natlpark""")
-    data = []
-    for row in enumerate(rows):
-        temp = {}
-        for entry in row:
-            temp{'a'} = entry
-        data.append(temp)
-    return data
+    rows = execute_query("""SELECT * FROM tweets""")
+    return rows
 
 @app.route('/data')
 def get_data():
@@ -57,4 +49,5 @@ def get_data():
 
 
 if __name__ == '__main__':
+    # db.create_all()
     app.run()
