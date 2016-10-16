@@ -3,7 +3,7 @@ from Tweet import Tweet
 import sqlite3
 import csv
 import json
-import requests
+import urllib.request
 
 
 def createQuery(file):
@@ -25,19 +25,12 @@ def getTweets(query, party):
                           party, result.created_at)
             tweets.append(tweet)
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
-            # coords = geocoder.google(result.user.location)
-            # if coords:
+            print(result.user.location)
             if mydict.get(result.user.location.upper(), "Not Found") != "Not Found":
-                r = requests.get(url="http://api.zippopotam.us/us/" + mydict[result.user.location.upper()])
-                data = json.load(r)
-                tweet = Tweet(data["latitude"], data["longitude"], 'party', result.created_at)
+                response = urllib.request.urlopen("http://api.zippopotam.us/us/" + mydict[result.user.location.upper()]).read().decode('utf-8')
+                data = json.loads(response)
+                tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), 'party', result.created_at)
                 tweets.append(tweet)
-
-
-def createDictionary:
-    with open('Zipcodes.csv', mode='r') as infile:
-        reader = csv.reader(infile)
-        mydict = {rows[3] + ", " + rows[4]:rows[1] for rows in reader}
 
 
 api = twitter.Api(consumer_key='rnBTENQ1GCJdZLVEuZheV6YJ6',
@@ -51,6 +44,10 @@ democrat_file = open('democrat_hashtags.txt', 'r')
 republican_query = createQuery(republican_file)
 democrat_query = createQuery(democrat_file)
 
+with open('Zipcodes.csv', mode='r') as infile:
+    reader = csv.reader(infile)
+    mydict = {rows[3] + ", " + rows[4]: rows[1] for rows in reader}
+
 tweets = []
 getTweets(republican_query, 'Republican')
 getTweets(democrat_query, 'Democrat')
@@ -61,4 +58,7 @@ c = conn.cursor()
 for tweet in tweets:
     c.execute('INSERT INTO tweets (lat, long, party, tweet_time) VALUES (?, ?, ?, ?)', (tweet.latitude, tweet.longitude, tweet.party, tweet.timestamp))
 
-print(tweets)
+rows = c.execute('SELECT * FROM tweets')
+for row in rows:
+    print(row)
+
