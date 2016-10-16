@@ -4,6 +4,7 @@ import sqlite3
 import csv
 import json
 import urllib.request
+import boto3
 
 
 def createQuery(file):
@@ -29,7 +30,7 @@ def getTweets(query, party):
             if mydict.get(result.user.location.upper(), "Not Found") != "Not Found":
                 response = urllib.request.urlopen("http://api.zippopotam.us/us/" + mydict[result.user.location.upper()]).read().decode('utf-8')
                 data = json.loads(response)
-                tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), 'party', result.created_at)
+                tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
                 tweets.append(tweet)
 
 
@@ -52,12 +53,17 @@ tweets = []
 getTweets(republican_query, 'Republican')
 getTweets(democrat_query, 'Democrat')
 
-conn = sqlite3.connect('tweets.db')
-c = conn.cursor()
-
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Tweets')
+id = 1
 for tweet in tweets:
-    c.execute('INSERT INTO tweets (lat, long, party, tweet_time) VALUES (?, ?, ?, ?)', (tweet.latitude, tweet.longitude, tweet.party, tweet.timestamp))
-
-rows = c.execute('SELECT * FROM tweets')
-for row in rows:
-    print(row)
+    response = table.put_item(
+        Item={
+            'id' = id,
+            'lat' = tweet.latitude,
+            'long' = tweet.longitude,
+            'party' = tweet.party,
+            'time' = tweet.timestamp
+        }
+    )
+    id += 1
