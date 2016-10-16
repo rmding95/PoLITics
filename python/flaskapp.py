@@ -1,36 +1,18 @@
 from flask import Flask, request, g, url_for
 from flask.ext.api import FlaskAPI, status, exceptions
-
-import sqlite3
+import boto3
 
 app = FlaskAPI(__name__)
 app.config.from_object(__name__)
 
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Tweets')
 
-##### CONNECT TO DATABASE #####
-
-DATABASE = '/var/www/html/flaskapp/tweets.db'
-
-def connect_to_database():
-    return sqlite3.connect(app.config['DATABASE'])
-
-def get_db():
-    db = getattr(g, 'db', None)
-    if db is None:
-        db = g.db = connect_to_database()
-    return db
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, 'db', None)
-    if db is not None:
-        db.close()
-
-def execute_query(query, args=()):
-    cur = get_db().execute(query, args)
-    rows = cur.fetchall()
-    cur.close()
-    return rows
+@app.route("/viewdb")
+def viewdb():
+    response = table.scan()
+    data = response['Items']
+    return data
 
 
 
@@ -38,10 +20,7 @@ def execute_query(query, args=()):
 
 GUIDE = ['x', 'y', 'party', 'tweet_time']
 
-@app.route('/viewdb')
-def viewdb():
-    rows = execute_query("""SELECT * FROM tweets""")
-    return rows
+
 
 @app.route('/data')
 def get_data():
