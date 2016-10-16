@@ -28,8 +28,8 @@ def getTweets(query, party):
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
             print(result.user.location)
             for state in mydict2:
-                if (state[0]+",").lower() in result.user.location.lower() or (state[0]+" ").lower() in result.user.location.lower() or state[3].lower in result.user.location.lower():
-                    stateid = state [0]
+                if (state[0]+",").lower() in result.user.location.lower() or (state[0]+" ").lower() in result.user.location.lower() or state[2].lower in result.user.location.lower():
+                    stateid = state[0]
                     locationsent= 0
                     for city in mydict2[stateid]:
                         if city[0].lower() in result.user.location.lower():
@@ -44,7 +44,8 @@ def getTweets(query, party):
                     if locationsent == 0:
                         for state in mydict:
                             if state[0] == stateid:
-                                response = urllib.request.urlopen("http://api.zippopotam.us/us/" + state[1]).read().decode('utf-8')data = json.loads(response)
+                                response = urllib.request.urlopen("http://api.zippopotam.us/us/" + state[1]).read().decode('utf-8')
+                                data = json.loads(response)
                                 if data.get('places')[0].get('latitude') == None or data.get('places')[0].get('longitude') == None:
                                     break
                                 tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
@@ -86,7 +87,7 @@ democrat_query = createQuery(democrat_file)
 
 with open('StateZip.csv', mode='r') as infile:
     reader = csv.reader(infile)
-    mydict2 = [[rows[0], rows[1], rows[2]] for rows in reader]
+    mydict = [[rows[0], rows[1], rows[2]] for rows in reader]
 
 
 with open('Zipcodes.csv', mode='r') as infile:
@@ -109,11 +110,11 @@ id = 1
 for tweet in tweets:
     response = table.put_item(
         Item={
-            'id' = id,
-            'lat' = tweet.latitude,
-            'long' = tweet.longitude,
-            'party' = tweet.party,
-            'time' = tweet.timestamp
+            #'id' = id,
+            #'lat' = tweet.latitude,
+            #'long' = tweet.longitude,
+            #'party' = tweet.party,
+            #'time' = tweet.timestamp
         }
     )
     id += 1
