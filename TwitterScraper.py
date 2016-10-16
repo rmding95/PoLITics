@@ -58,13 +58,16 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Tweets')
 id = 1
 for tweet in tweets:
+    temp = {
+        'time': str(tweet.timestamp),
+        'data': ''
+    }
     response = table.put_item(
         Item={
-            'ID': id,
-            'lat': tweet.latitude,
-            'long': tweet.longitude,
-            'party': tweet.party,
-            'time': 'string'
+            'time': str(tweet.timestamp),
+            'lat': str(tweet.latitude),
+            'long': str(tweet.longitude),
+            'party': str(tweet.party)
         }
     )
     id += 1
