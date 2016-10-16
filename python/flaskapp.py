@@ -8,13 +8,12 @@ app.config.from_object(__name__)
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Tweets')
 
-<<<<<<< HEAD
 @app.route("/viewdb")
 def viewdb():
     response = table.scan()
     data = response['Items']
     return data
-=======
+    
 ##### CONNECT TO DATABASE #####
 
 def connect_to_database():

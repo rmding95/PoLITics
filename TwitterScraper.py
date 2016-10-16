@@ -3,7 +3,7 @@ from Tweet import Tweet
 import sqlite3
 import csv
 import json
-import urllib.request
+import urllib
 import boto3
 
 
@@ -28,10 +28,11 @@ def getTweets(query, party):
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
             print(result.user.location)
             if mydict.get(result.user.location.upper(), "Not Found") != "Not Found":
-                response = urllib.request.urlopen("http://api.zippopotam.us/us/" + mydict[result.user.location.upper()]).read().decode('utf-8')
+                response = urllib.urlopen("http://api.zippopotam.us/us/" + mydict[result.user.location.upper()]).read().decode('utf-8')
                 data = json.loads(response)
-                tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
-                tweets.append(tweet)
+                if data:
+                    tweet = Tweet(data.get('places')[0].get('latitude'), data.get('places')[0].get('longitude'), party, result.created_at)
+                    tweets.append(tweet)
 
 
 api = twitter.Api(consumer_key='rnBTENQ1GCJdZLVEuZheV6YJ6',
@@ -59,11 +60,11 @@ id = 1
 for tweet in tweets:
     response = table.put_item(
         Item={
-            'id' = id,
-            'lat' = tweet.latitude,
-            'long' = tweet.longitude,
-            'party' = tweet.party,
-            'time' = tweet.timestamp
+            'ID': id,
+            'lat': tweet.latitude,
+            'long': tweet.longitude,
+            'party': tweet.party,
+            'time': 'string'
         }
     )
     id += 1
