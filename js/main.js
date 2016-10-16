@@ -15,7 +15,24 @@ function initialize() {
 
   // (In this example we use a locally stored copy instead.)
   // script.src = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp';
-  script.src = 'https://developers.google.com/maps/documentation/javascript/tutorials/js/earthquake_GeoJSONP.js';
+  
+  
+  $.ajax({
+    url: "http://ec2-54-69-181-193.us-west-2.compute.amazonaws.com/data",
+    type: "GET",
+    contentType: 'application/json; charset=utf-8',
+    success: function(data){
+      console.log(data);
+      plotData(data)
+    }, 
+    error: function(data){
+      console.log(data)
+    }
+  }), 
+
+  function plotData (data){
+  
+  // script.src = 'https://developers.google.com/maps/documentation/javascript/tutorials/js/earthquake_GeoJSONP.js';
   document.getElementsByTagName('head')[0].appendChild(script);
 
   map.data.setStyle(function (feature) {
@@ -66,5 +83,6 @@ function eqfeed_callback(results) {
   setTimeout(eqfeed_callback(null, results), 2000); 
 }
 
+}
 
 
