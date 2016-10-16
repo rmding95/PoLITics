@@ -1,6 +1,7 @@
 import twitter
 import geocoder
 from Tweet import Tweet
+import sqlite3
 
 
 def createQuery(file):
@@ -42,5 +43,11 @@ democrat_query = createQuery(democrat_file)
 tweets = []
 getTweets(republican_query, 'Republican')
 getTweets(democrat_query, 'Democrat')
+
+conn = sqlite3.connect('tweets.db')
+c = conn.cursor()
+
+for tweet in tweets:
+    c.execute('INSERT INTO tweets VALUES (?, ?, ?, ?)', (tweet.latitude, tweet.longitude, tweet.party, tweet.timestamp))
 
 print(tweets)
