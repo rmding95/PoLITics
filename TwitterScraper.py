@@ -27,7 +27,7 @@ def getTweets(query, party):
             tweets.append(tweet)
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
             print(result.user.location)
-            for state in mydict2:
+            for state in mydict:
                 if (state[0]+",").lower() in result.user.location.lower() or (state[0]+" ").lower() in result.user.location.lower() or state[2].lower in result.user.location.lower():
                     stateid = state[0]
                     locationsent= 0
