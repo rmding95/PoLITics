@@ -1,0 +1,38 @@
+[
+    {
+        "lat": '23',
+        "long": '-98.5795',
+        "party": 'Democrat',
+        "time": '8am'
+    },
+    {
+        "lat": '39.8282',
+        "long": '-100',
+        "party": 'Republican',
+        "time": '8am'
+    },
+    {
+        "lat": '41',
+        "long": '-101',
+        "party": 'Democrat',
+        "time": '8am'
+    },
+    {
+        "lat": '42',
+        "long": '-102',
+        "party": 'Republican',
+        "time": '8am'
+    },
+    {
+        "lat": '43',
+        "long": '-103',
+        "party": 'Democrat',
+        "time": '8am'
+    },
+    {
+        "lat": '44',
+        "long": '-104',
+        "party": 'Republican',
+        "time": '8am'
+    },
+]

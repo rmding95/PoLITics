@@ -1,14 +1,24 @@
 var map;
 
 function initialize() {
-  var map = new google.maps.Map(d3.select("#map").node(), {
+  var mapOptions = {
     zoom: 4,
-    center: new google.maps.LatLng(39.8282, -98.5795),
-    mapTypeId: google.maps.MapTypeId.TERRAIN
-  });
+    center: { lat: 39.8282, lng: -98.5795 },
+    mapTypeId: 'terrain'
+  };
 
-   $.ajax({
-    url: "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp",
+  map = new google.maps.Map(document.getElementById('map'),
+    mapOptions);
+
+  // Create a <script> tag and set the USGS URL as the source.
+  //var script = document.createElement('script');
+
+  // (In this example we use a locally stored copy instead.)
+  // script.src = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp';
+  
+  
+  $.ajax({
+    url: "127.0.0.1:5000/data",
     type: "GET",
     contentType: 'application/json; charset=utf-8',
     success: function(data){
@@ -18,53 +28,56 @@ function initialize() {
     error: function(data){
       console.log(data)
     }
-  })
+  }), 
 
-  function plotData(data){
 
-  var overlay = new google.maps.OverlayView();
 
-  // Add the container when the overlay is added to the map.
-  overlay.onAdd = function() {
-    var layer = d3.select(this.getPanes().overlayLayer).append("div")
-        .attr("class", "stations");
+  function plotData (data){
+  
+  // script.src = 'https://developers.google.com/maps/documentation/javascript/tutorials/js/earthquake_GeoJSONP.js';
+  document.getElementsByTagName('head')[0].appendChild(script);
 
-    // Draw each marker as a separate SVG element.
-    // We could use a single SVG, but what size would it have?
-    overlay.draw = function() {
-      var projection = this.getProjection(),
-          padding = 10;
-
-      var marker = layer.selectAll("svg")
-          .data(d3.entries(data))
-          .each(transform) // update existing markers
-        .enter().append("svg")
-          .each(transform)
-          .attr("class", "marker");
-
-      // Add a circle.
-      marker.append("circle")
-          .attr("r", 4.5)
-          .attr("cx", padding)
-          .attr("cy", padding);
-
-      // Add a label.
-      marker.append("text")
-          .attr("x", padding + 7)
-          .attr("y", padding)
-          .attr("dy", ".31em")
-          .text(function(d) { return d.key; });
-
-      function transform(d) {
-        d = new google.maps.LatLng(d.value[1], d.value[0]);
-        d = projection.fromLatLngToDivPixel(d);
-        return d3.select(this)
-            .style("left", (d.x - padding) + "px")
-            .style("top", (d.y - padding) + "px");
-      }
+  map.data.setStyle(function (feature) {
+    var color = feature.getProperty('party');
+    return {
+      icon: getCircle(color)
+      
     };
-  };
+  });
+}
 
-  // Bind our overlay to the map…
-  overlay.setMap(map);
-}}
+function getCircle(color) {
+   if (color == Democrat){
+  var circle = {
+    path: google.maps.SymbolPath.CIRCLE,
+    fillColor: 'blue',
+    fillOpacity: .2,
+    scale: Math.pow(2, 3) / 2,
+    strokeColor: 'white',
+    strokeWeight: .5,
+  };
+  } else {
+    var circle = {
+    path: google.maps.SymbolPath.CIRCLE,
+    fillColor: 'red',
+    fillOpacity: .2,
+    scale: Math.pow(2, 3) / 2,
+    strokeColor: 'white',
+    strokeWeight: .5,
+  };
+  }
+
+  return circle;
+}
+
+function eqfeed_callback(results) {
+  map.data.addGeoJson(results);
+
+  setTimeout(eqfeed_callback(null, results), 2000); 
+}
+
+}
+
+//myCircle.transition()
+//  .delay(600)
+//  circle.exit().remove
