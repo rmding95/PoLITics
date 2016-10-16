@@ -26,14 +26,12 @@ def getTweets(query, party):
                           party, result.created_at)
             tweets.append(tweet)
         if (result.user.geo_enabled is True) and (len(result.user.location) > 0):
-            print(result.user.location)
             locationsent = 0
             for state in mydict:
                 test1 = state[0] + ","
                 test2 = state[0] + " "
                 if test1.lower() in result.user.location.lower() or test2.lower() in result.user.location.lower() or state[2].lower() in result.user.location.lower():
                     stateid = state[0]
-
                     for city in mydict2[stateid]:
                         if city[0].lower() in result.user.location.lower():
                             response = urllib.request.urlopen("http://api.zippopotam.us/us/" + city[1]).read().decode('utf-8')
