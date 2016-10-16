@@ -1,18 +1,29 @@
-function init_map() {
-    var myOptions = {
-        zoom: 4,
-        center: new google.maps.LatLng(42.228517539011186, -96.15234412500001),
-        mapTypeId: google.maps.MapTypeId.TERRAIN
-    };
-    map = new google.maps.Map(document.getElementById('gmap_canvas'),
-        myOptions);
-  
-    infowindow = new google.maps.InfoWindow({
-        content: '<strong>Title<\/strong><br>United Sates<br>'
-    });
-    google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(map, marker);
-    });
-    infowindow.open(map, marker);
+var map;
+function initialize() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 2,
+    center: new google.maps.LatLng(2.8,-187.3),
+    mapTypeId: 'terrain'
+  });
+
+  // Create a <script> tag and set the USGS URL as the source.
+  var script = document.createElement('script');
+  // (In this example we use a locally stored copy instead.)
+  // script.src = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp';
+  script.src = 'https://developers.google.com/maps/documentation/javascript/tutorials/js/earthquake_GeoJSONP.js';
+  document.getElementsByTagName('head')[0].appendChild(script);
 }
-google.maps.event.addDomListener(window, 'load', init_map);
+
+// Loop through the results array and place a marker for each
+// set of coordinates.
+window.eqfeed_callback = function(results) {
+  for (var i = 0; i < results.features.length; i++) {
+    var coords = results.features[i].geometry.coordinates;
+    var latLng = new google.maps.LatLng(coords[1],coords[0]);
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map
+    });
+  }
+}
+
