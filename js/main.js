@@ -18,63 +18,69 @@ function initialize() {
   
   
   $.ajax({
-    url: "127.0.0.1:5000/data",
+    url: "http://127.0.0.1:5000/data",
     type: "GET",
     contentType: 'application/json; charset=utf-8',
+    crossDomain: 'true',
     success: function(data){
       console.log(data);
-      plotData(data)
+      plotData(data);
     }, 
     error: function(data){
       console.log(data)
     }
-  }), 
+  }); 
 
 
 
   function plotData (data){
-  
-  // script.src = 'https://developers.google.com/maps/documentation/javascript/tutorials/js/earthquake_GeoJSONP.js';
-  document.getElementsByTagName('head')[0].appendChild(script);
 
-  map.data.setStyle(function (feature) {
-    var color = feature.getProperty('party');
-    return {
-      icon: getCircle(color)
-      
+    // document.getElementsByTagName('head')[0].appendChild(script);
+    for (var city in data) {
+      var cityCircle = new google.maps.Circle({
+        strokeColor: '#000000',
+        map: map,
+        center: citymap[city].center,
+        radius: Math.sqrt(citymap[city].population) * 100
+      })
+      map.data.setStyle(function (feature) {
+      var color = feature.getProperty('party');
+      return {
+        icon: getCircle(color)
+      };
+      });
     };
-  });
-}
+  };
 
-function getCircle(color) {
-   if (color == Democrat){
-  var circle = {
-    path: google.maps.SymbolPath.CIRCLE,
-    fillColor: 'blue',
-    fillOpacity: .2,
-    scale: Math.pow(2, 3) / 2,
-    strokeColor: 'white',
-    strokeWeight: .5,
-  };
-  } else {
-    var circle = {
-    path: google.maps.SymbolPath.CIRCLE,
-    fillColor: 'red',
-    fillOpacity: .2,
-    scale: Math.pow(2, 3) / 2,
-    strokeColor: 'white',
-    strokeWeight: .5,
-  };
+  function getCircle(color) {
+     if (color == 'Democrat'){
+      var circle = {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: 'blue',
+        fillOpacity: .2,
+        scale: Math.pow(2, 3) / 2,
+        strokeColor: 'white',
+        strokeWeight: .5,
+      };
+    } else {
+      var circle = {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: 'red',
+      fillOpacity: .2,
+      scale: Math.pow(2, 3) / 2,
+      strokeColor: 'white',
+      strokeWeight: .5,
+    };
+    }
+
+    return circle;
   }
 
-  return circle;
-}
+  function eqfeed_callback(results) {
+    map.data.addGeoJson(results);
 
-function eqfeed_callback(results) {
-  map.data.addGeoJson(results);
-
-  setTimeout(eqfeed_callback(null, results), 2000); 
-}
+    setTimeout(eqfeed_callback(null, results), 2000); 
+  }
 
 }
 
