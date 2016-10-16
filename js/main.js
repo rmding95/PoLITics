@@ -2,8 +2,8 @@ var map;
 
 function initialize() {
   var mapOptions = {
-    zoom: 2,
-    center: { lat: -33.865427, lng: 151.196123 },
+    zoom: 5,
+    center: { lat: 39.8282, lng: -98.5795 },
     mapTypeId: 'terrain'
   };
 
@@ -11,11 +11,11 @@ function initialize() {
     mapOptions);
 
   // Create a <script> tag and set the USGS URL as the source.
-  var script = document.createElement('script');
+  //var script = document.createElement('script');
 
   // (In this example we use a locally stored copy instead.)
   // script.src = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp';
-  
+  //document.getElementsByTagName('head')[0].appendChild(script);
   
   $.ajax({
     url: "http://ec2-54-69-181-193.us-west-2.compute.amazonaws.com/data",
@@ -85,4 +85,6 @@ function eqfeed_callback(results) {
 
 }
 
-
+//myCircle.transition()
+//  .delay(600)
+//  circle.exit().remove();

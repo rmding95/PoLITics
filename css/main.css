@@ -1,5 +1,6 @@
 html, body, #map {
-  margin: 0;
+  margin-left: 3%;
+  margin-right: 3%;
   padding: 0;
   height: 100%;
 }
